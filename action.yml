@@ -26,7 +26,7 @@ inputs:
   strategy:
     description: 'Boundary strategy (void or loop)'
     required: false
-    default: 'void'
+    default: 'loop'
 
   commit-message:
     description: 'Commit message for GIF changes'

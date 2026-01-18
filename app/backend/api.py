@@ -17,9 +17,9 @@ from gh_game_of_life.generate import generate_gif
 
 # Configuration
 DEFAULT_FRAMES = 20
-DEFAULT_STRATEGY = "void"
+DEFAULT_STRATEGY = "loop"
 MAX_FRAMES = 100
-TIMEOUT_SECONDS = 60  # 60 second timeout for Vercel free tier
+TIMEOUT_SECONDS = 60
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -55,7 +55,7 @@ async def generate_gif_endpoint(
     ),
     strategy: str = Query(
         DEFAULT_STRATEGY,
-        description="Boundary strategy: 'void' or 'loop'",
+        description="Boundary strategy: 'loop' or 'void'",
     ),
 ) -> StreamingResponse:
     """Generate a Game of Life GIF from GitHub contribution data.
@@ -63,7 +63,7 @@ async def generate_gif_endpoint(
     Query Parameters:
     - username (required): GitHub username
     - frames: Number of frames (default: 20, max: 100)
-    - strategy: 'void' (default) or 'loop'
+    - strategy: 'loop' (default) or 'void'
 
     Returns:
     - Streaming GIF file with appropriate MIME type

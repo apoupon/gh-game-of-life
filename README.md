@@ -30,11 +30,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: apoupon/gh-game-of-life
+      - uses: apoupon/gh-game-of-life@v1.1.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           output-path: 'game.gif'
-          strategy: 'random'
+          strategy: 'loop'
 ```
 
 Then display it in your README:
