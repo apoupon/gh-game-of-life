@@ -1,19 +1,36 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "gh-game-of-life"
 version = "0.1.0"
-description = "Visualizes GitHub contribution graphs as Conway's Game of Life."
+authors = [
+  { name="Antoine Poupon", email="ant.poupon@gmail.com" },
+]
+description = "Transform your GitHub contribution graph into Conway's Game of Life."
 readme = "README.md"
+license = "MIT"
 requires-python = ">=3.11"
 dependencies = [
-    "httpx>=0.28.1",
-    "pillow>=12.1.0",
+    "pillow>=12.0",
     "python-dotenv>=1.2.1",
-    "requests>=2.32.5",
-    "rich>=14.2.0",
-    "typer>=0.21.1",
+    "requests>=2.31",
 ]
 
-[tool.uv.workspace]
-members = [
-    "app",
+[project.optional-dependencies]
+api = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "python-multipart>=0.0.6",
 ]
+dev = [
+    "pytest>=9.0",
+]
+
+[project.scripts]
+gh-game-of-life = "gh_game_of_life.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

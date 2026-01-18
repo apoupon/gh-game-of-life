@@ -1,0 +1,85 @@
+name: 'Game of Life GIF Generator'
+description: 'Transform your GitHub contribution graph into Conway''s Game of Life animation'
+author: 'Game of Life Contributors'
+
+inputs:
+  github-username:
+    description: 'GitHub username to generate GIF from'
+    required: false
+    default: ${{ github.repository_owner }}
+
+  github-token:
+    description: 'GitHub token for API access'
+    required: false
+    default: ${{ github.token }}
+
+  output-path:
+    description: 'Path where the generated GIF will be saved'
+    required: false
+    default: 'game-of-life.gif'
+
+  frames:
+    description: 'Number of simulation frames to generate'
+    required: false
+    default: '20'
+
+  strategy:
+    description: 'Boundary strategy (void or loop)'
+    required: false
+    default: 'void'
+
+  commit-message:
+    description: 'Commit message for GIF changes'
+    required: false
+    default: 'chore(auto): regenerate Game of Life GIF'
+
+outputs:
+  gif-path:
+    description: 'Path to the generated GIF file'
+    value: ${{ steps.generate.outputs.gif-path }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install gh-game-of-life
+      shell: bash
+      run: |
+        pip install --no-cache-dir -e .
+
+    - name: Generate Game of Life GIF
+      shell: bash
+      id: generate
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      run: |
+        echo "::group::Generating Game of Life GIF"
+        echo "Username: ${{ inputs.github-username }}"
+        echo "Output: ${{ inputs.output-path }}"
+        echo "Frames: ${{ inputs.frames }}"
+        echo "Strategy: ${{ inputs.strategy }}"
+        echo "Token: ${GITHUB_TOKEN:+configured}"
+        echo "::endgroup::"
+
+        gh-game-of-life "${{ inputs.github-username }}" \
+          --output "${{ inputs.output-path }}" \
+          --frames "${{ inputs.frames }}" \
+          --strategy "${{ inputs.strategy }}"
+
+        echo "gif-path=${{ inputs.output-path }}" >> $GITHUB_OUTPUT
+        echo "✅ GIF generated successfully at ${{ inputs.output-path }}"
+
+    - name: Commit and push GIF
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add ${{ inputs.output-path }}
+        git diff --staged --quiet || git commit -m "${{ inputs.commit-message }}"
+        git push
