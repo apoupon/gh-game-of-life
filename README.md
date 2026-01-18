@@ -12,7 +12,7 @@ Check out the [web demo](test.fr) and generate a GIF in seconds without installi
 
 ### GitHub Action
 
-Automatically update your game GIF daily using GitHub Actions! Add this workflow to your repository at .github/workflows/update-game.yml:
+Automatically update your game GIF daily using GitHub Actions! Add this workflow to your repository at `.github/workflows/update-game.yml`:
 ```
 name: Update Game of Life Game
 
@@ -122,7 +122,7 @@ This project uses the Quad-Life variant, which employs four symmetrical colors, 
 
 This project also serves as an experiment in coding with AI assistants. I have been using LLMs in my development workflow for a while but had not yet explored specialized coding agents such as Claude Code, Cursor, or GitHub Copilot in Agent mode. For this project, I experimented with GitHub Copilot and Claude Sonnet 4.5, taking the project from initial idea to working implementation.
 
-I drew inspiration from the BMAD method ("Build More, Architect Dreams") and followed a structured workflow: starting with a product brief, then moving through product requirement design, UX design, software architecture, and breaking work into epics and stories. Development and testing occurred in iterative loops, completing tests before moving on to the next story or epic.
+I drew inspiration from the [BMAD method](https://docs.bmad-method.org/) and followed a structured workflow: starting with a product brief, then moving through product requirement design, UX design, software architecture, and breaking work into epics and stories. Development and testing occurred in iterative loops, completing tests before moving on to the next story or epic.
 
 It was smooth and fast.
 

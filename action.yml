@@ -49,7 +49,8 @@ runs:
     - name: Install gh-game-of-life
       shell: bash
       run: |
-        pip install --no-cache-dir -e .
+        python -m pip install --upgrade pip
+        pip install gh-game-of-life
 
     - name: Generate Game of Life GIF
       shell: bash
