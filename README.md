@@ -8,12 +8,12 @@ Transform your GitHub contribution graph into Conway's Game of Life.
 
 ### One time generation
 
-Check out the [web demo](test.fr) and generate a GIF in seconds without installing anything locally.
+Check out the [web demo](https://gh-game-of-life-vercel-deployment.vercel.app/) and generate a GIF in seconds without installing anything locally.
 
 ### GitHub Action
 
 Automatically update your game GIF daily using GitHub Actions! Add this workflow to your repository at `.github/workflows/update-game.yml`:
-```
+```yaml
 name: Update Game of Life Game
 
 on:
@@ -38,19 +38,19 @@ jobs:
 ```
 
 Then display it in your README:
-```
+```markdown
 ![My GitHub Game](game.gif)
 ```
 
 ### From PyPI
 
-```
+```bash
 pip install gh-game-of-life
 ```
 
 ### From source
 
-```
+```bash
 # Clone the repository
 git clone https://github.com/apoupon/gh-game-of-life.git
 cd gh-game-of-life

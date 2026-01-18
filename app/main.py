@@ -38,13 +38,13 @@ app.add_middleware(
 )
 
 
-@app.get("/health")
+@app.get("/api/health")
 async def health_check():
     """Health check endpoint."""
     return {"status": "ok", "version": "0.1.0"}
 
 
-@app.get("/generate")
+@app.get("/api/generate")
 async def generate_gif_endpoint(
     username: str = Query(..., description="GitHub username to generate GIF from"),
     frames: int = Query(
@@ -143,15 +143,15 @@ async def generate_gif_endpoint(
         )
 
 
-@app.get("/")
+@app.get("/api/")
 async def root():
     """Root endpoint with API documentation."""
     return {
         "name": "Game of Life GIF Generator API",
-        "version": "0.1.0",
+        "version": "1.1.0",
         "endpoints": {
-            "health": "/health",
-            "generate": "/generate?username=<github-username>&frames=20&strategy=void",
+            "health": "/api/health",
+            "generate": "/api/generate?username=<github-username>&frames=20&strategy=loop",
         },
         "docs": "/docs",
         "openapi": "/openapi.json",

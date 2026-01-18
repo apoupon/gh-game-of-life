@@ -57,12 +57,14 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: flex-start;
+      padding-top: 3rem;
     }
 
     /* Header */
     .header {
       margin-top: 5rem;
-      margin-bottom: 2.5rem;
+      margin-bottom: 4rem;
       text-align: center;
     }
 
@@ -175,7 +177,7 @@
 
       <div class="input-line">
         <span class="prompt">&gt;</span>
-        <input id="input" autocomplete="off" placeholder="type /help and press enter" />
+        <input id="input" autocomplete="off" />
       </div>
     </div>
 
@@ -186,21 +188,33 @@
     const terminal = document.getElementById('terminal');
     const input = document.getElementById('input');
     const note = document.getElementById('note');
+    const history = [];   // stores entered commands
+    let historyIndex = -1; // pointer for navigating history
 
     const FRAMES = 100;
     const STRATEGY = 'loop';
 
+    function scrollTerminalToBottom() {
+      terminal.scrollTop = terminal.scrollHeight;
+      input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
     function print(text, cls = '') {
       const div = document.createElement('div');
       div.className = `line ${cls}`;
       div.textContent = text;
       terminal.appendChild(div);
-      terminal.scrollTop = terminal.scrollHeight;
+      scrollTerminalToBottom();
     }
 
     function printNode(node) {
       terminal.appendChild(node);
-      terminal.scrollTop = terminal.scrollHeight;
+
+      if (node.tagName === 'IMG') {
+        // Wait for the image to fully load
+        node.onload = () => scrollTerminalToBottom();
+      } else {
+        scrollTerminalToBottom();
+      }
     }
 
     function banner() {
@@ -209,7 +223,30 @@
       print('');
     }
 
+    function disableInput() {
+      input.disabled = true;
+      input.style.color = 'transparent';      // hide text
+      input.style.caretColor = 'transparent'; // hide cursor
+      document.querySelector('.input-line .prompt').style.visibility = 'hidden';
+    }
+
+    function enableInput() {
+      input.disabled = false;
+      input.style.color = '#c9d1d9';         // restore text color
+      input.style.caretColor = '#c9d1d9';    // restore cursor
+      document.querySelector('.input-line .prompt').style.visibility = 'visible';
+      input.focus();                          // give focus back
+    }
+
+    // Make terminal clicks focus the input
+    document.querySelector('.terminal').addEventListener('click', () => {
+      input.focus();
+    });
+
     async function generate(username) {
+
+      disableInput(); // block terminal during generation
+
       print(`Generating GIF for "${username}"...`, 'system');
 
       try {
@@ -219,11 +256,13 @@
           strategy: STRATEGY
         });
 
-        const API_BASE = window.location.hostname === 'localhost'
-          ? 'http://localhost:8000'  // local backend
-          : '';                       // relative path on Vercel
+        const LOCAL_HOSTNAMES = ["localhost", "127.0.0.1", "::1"];
 
-        const res = await fetch(`http://localhost:8000/generate?${params}`);
+        const API_BASE = LOCAL_HOSTNAMES.includes(window.location.hostname)
+          ? "http://127.0.0.1:8000"
+          : "";
+
+        const res = await fetch(`${API_BASE}/api/generate?${params}`);
         if (!res.ok) throw new Error(`All cells died unexpectedly (HTTP ${res.status})`);
 
         const blob = await res.blob();
@@ -251,79 +290,137 @@
 
       } catch (err) {
         print(err.message, 'error');
+      } finally {
+        enableInput();  // unblock terminal
       }
     }
 
     function showContext() {
       print('About this project:', 'success');
       print(
-`This demo transforms GitHub contribution grids
-into evolving cellular automata simulations.
+`This demo transforms GitHub contribution grids into evolving cellular
+automata simulations.
 
-Conway’s Game of Life follows simple rules
-that lead to complex emergent behavior.
+The Game of Life is a cellular automaton devised by the British mathematician
+John Horton Conway in 1970. It is a zero-player game meaning that its evolution
+is determined by its initial state, requiring no further input. Despite being
+governed by just three simple rules, it can give rise to incredibly complex
+behaviors and patterns. The Game of Life is a perfect example of how simple
+rules can generate unexpected complexity.
 
-QuadLife extends this with four competing
-cell species.`
+An interesting variation of the Life rules is to use several distinct living
+state, with each behaving according to Life rules, but, in addition, carrying
+independent color information. The color of each newly-born bit is determined by
+the color of its parents. Resulting patterns have exactly the same life/death
+behavior as in normal Life, but the colors of resulting bits provides interesting
+additional complexity.
+
+This project uses the Quad-Life variant, which employs four symmetrical colors,
+creating vibrant, evolving patterns while maintaining the familiar Life behavior.`
       );
     }
 
     function showHelp() {
       print('Commands:', 'success');
-      print('/generate <username>  Generate a GIF from `username` contribution graph');
-      print('/context              About the project');
-      print('/clear               Clear the terminal');
-      print('/help                 Show this help');
+      print('/generate <username>             Generate a GIF from `username` contribution graph');
+      print('/about                           About the project');
+      print('/clear                           Clear the terminal');
+      print('/help                            Show this help');
     }
 
-    const COMMANDS = ['/generate', '/clear', '/help', '/context'];
+    const COMMANDS = ['/generate', '/clear', '/help', '/about'];
 
     input.addEventListener('keydown', (e) => {
-      if (e.key === 'Tab') {
-        e.preventDefault();
+    const value = input.value;
 
-        const value = input.value.trim();
+    // Ctrl+C / Cmd+C
+    if (e.ctrlKey && e.key.toLowerCase() === 'c') {
+      e.preventDefault();               // prevent text selection
+      const currentText = input.value;  // capture current input
+      if (currentText) print(`> ${currentText}`, 'command'); // print what user typed
+      print('^C', 'error');             // print ^C on a new line
+      input.value = '';                 // clear input
+      scrollTerminalToBottom();         // scroll
+      return;
+    }
 
-        // Autocomplete only commands (start with /)
-        if (!value.startsWith('/')) return;
+    // Tab autocomplete
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      if (!value.startsWith('/')) return;
 
-        const matches = COMMANDS.filter(cmd =>
-          cmd.startsWith(value)
-        );
+      const matches = COMMANDS.filter(cmd => cmd.startsWith(value));
+      if (matches.length === 1) input.value = matches[0] + ' ';
+      else if (matches.length > 1) print(matches.join('   '), 'system');
+      return;
+    }
 
-        if (matches.length === 1) {
-          input.value = matches[0] + ' ';
-        } else if (matches.length > 1) {
-          print(matches.join('   '), 'system');
-        }
+    // Arrow up/down for history
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (history.length === 0) return;
+      if (historyIndex === -1) historyIndex = history.length; // start at the end
+      historyIndex = Math.max(0, historyIndex - 1);
+      input.value = history[historyIndex];
+      return;
+    }
 
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (history.length === 0) return;
+      if (historyIndex === -1) {
+        input.value = ''; // nothing to show
         return;
       }
 
-      if (e.key !== 'Enter') return;
+      historyIndex++;
 
-      const value = input.value.trim();
-      if (!value) return;
-
-      print(`> ${value}`, 'command');
-      input.value = '';
-
-      const [cmd, ...args] = value.split(/\s+/);
-      const arg = args.join(' ');
-
-      if (cmd === '/generate') {
-        if (!arg) print('Usage: /generate <username>', 'error');
-        else generate(arg);
-      } else if (cmd === '/context') {
-        showContext();
-      } else if (cmd === '/help') {
-        showHelp();
-      } else if (cmd === '/clear') {
-        terminal.innerHTML = '';  // Clear all history
+      if (historyIndex >= history.length) {
+        input.value = '';      // ✅ blank if no more history
+        historyIndex = -1;     // reset index
       } else {
-        print('Unknown command. Type /help.', 'error');
+        input.value = history[historyIndex];
       }
-    });
+      return;
+    }
+
+    // Enter key
+    if (e.key !== 'Enter') return;
+
+    const trimmed = value.trim();
+    if (!trimmed) {
+      print('');        // prints a new empty line
+      input.value = ''; // clear input
+      scrollTerminalToBottom();
+      return;
+    }
+
+    print(`> ${trimmed}`, 'command');
+    input.value = '';
+    scrollTerminalToBottom();
+
+    // Add command to history
+    history.push(trimmed);
+    historyIndex = -1; // reset index after entering
+
+    const [cmd, ...args] = trimmed.split(/\s+/);
+    const arg = args.join(' ');
+
+    if (cmd === '/generate') {
+      if (!arg) print('Usage: /generate <username>', 'error');
+      else generate(arg);
+    } else if (cmd === '/about') {
+      showContext();
+    } else if (cmd === '/help') {
+      showHelp();
+    } else if (cmd === '/clear') {
+      terminal.innerHTML = '';  // Clear everything
+      banner();                  // Reprint the banner
+    } else {
+      print('Unknown command. Type /help.', 'error');
+    }
+  });
+
 
 
     // Rotating note

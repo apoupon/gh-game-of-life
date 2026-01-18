@@ -3,7 +3,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from app.backend.api import app
+from app.main import app
 
 
 @pytest.fixture
@@ -94,19 +94,19 @@ class TestGenerateEndpointDefaults:
         # This is tested implicitly - if endpoint accepts username only,
         # it's using defaults. We can't easily verify the exact value
         # without generating, but the constant is visible in code.
-        from app.backend.api import DEFAULT_FRAMES
+        from app.main import DEFAULT_FRAMES
 
         assert DEFAULT_FRAMES == 20
 
     def test_default_strategy_is_void(self, client):
         """Default strategy is 'void'."""
-        from app.backend.api import DEFAULT_STRATEGY
+        from app.main import DEFAULT_STRATEGY
 
         assert DEFAULT_STRATEGY == "void"
 
     def test_max_frames_is_100(self, client):
         """Maximum frames is 100."""
-        from app.backend.api import MAX_FRAMES
+        from app.main import MAX_FRAMES
 
         assert MAX_FRAMES == 100
 
@@ -155,13 +155,13 @@ class TestTimeoutConfiguration:
 
     def test_timeout_is_60_seconds(self):
         """Timeout is configured for 60 seconds."""
-        from app.backend.api import TIMEOUT_SECONDS
+        from app.main import TIMEOUT_SECONDS
 
         assert TIMEOUT_SECONDS == 60
 
     def test_timeout_is_vercel_compatible(self):
         """Timeout is within Vercel free tier limits."""
-        from app.backend.api import TIMEOUT_SECONDS
+        from app.main import TIMEOUT_SECONDS
 
         # Vercel free tier has 10 second limit, but we configure 60
         # for local/production use. This is documented.
