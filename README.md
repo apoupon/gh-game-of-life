@@ -110,14 +110,12 @@ gh-game-of-life --config config.yaml
 
 You can design and test your own patterns using the [following notebook](have_fun.ipynb). The third cell contains an interactive canvas where you can "paint" on the grid and watch it evolve.
 
-<figure>
-  <img src="cool_patterns/spaceship.gif" alt="Spaceship pattern" width="500">
-  <figcaption align="center"><b>Spaceship</b></figcaption>
-</figure>
-<figure>
-  <img src="cool_patterns/oscillators.gif" alt="Spaceship pattern" width="500">
-  <figcaption align="center"><b>Oscillators</b></figcaption>
-</figure>
+**Spaceship:**
+![Spaceship](cool_patterns/spaceship.gif)
+
+**Oscillators:**
+![Oscillators](cool_patterns/oscillators.gif)
+
 
 ## On Conway's Game of Life
 
