@@ -110,6 +110,15 @@ gh-game-of-life --config config.yaml
 
 You can design and test your own patterns using the [following notebook](have_fun.ipynb). The third cell contains an interactive canvas where you can "paint" on the grid and watch it evolve.
 
+<figure>
+  <img src="cool_patterns/spaceship.gif" alt="Spaceship pattern" width="500">
+  <figcaption align="center"><b>Spaceship</b></figcaption>
+</figure>
+<figure>
+  <img src="cool_patterns/oscillators.gif" alt="Spaceship pattern" width="500">
+  <figcaption align="center"><b>Oscillators</b></figcaption>
+</figure>
+
 ## On Conway's Game of Life
 
 The Game of Life is a cellular automaton devised by the British mathematician John Horton Conway in 1970. It is a zero-player game meaning that its evolution is determined by its initial state, requiring no further input. Despite being governed by just three simple rules, it can give rise to incredibly complex behaviors and patterns. The Game of Life is a perfect example of how simple rules can generate unexpected complexity.
