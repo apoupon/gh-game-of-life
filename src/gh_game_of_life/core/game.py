@@ -30,7 +30,7 @@ class GameOfLife:
     Supports multiple boundary strategies for edge handling.
     """
 
-    def __init__(self, strategy: BoundaryStrategy = BoundaryStrategy.VOID) -> None:
+    def __init__(self, strategy: BoundaryStrategy = BoundaryStrategy.LOOP) -> None:
         """Initialize Game of Life simulator.
 
         Args:
