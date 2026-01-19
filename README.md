@@ -108,7 +108,7 @@ gh-game-of-life --config config.yaml
 
 ### Create cool patterns
 
-You can design and test your own patterns using the `have_fun` notebook. The third cell contains an interactive canvas where you can "paint" on the grid and watch it evolve.
+You can design and test your own patterns using the [following notebook](have_fun.ipynb). The third cell contains an interactive canvas where you can "paint" on the grid and watch it evolve.
 
 ## On Conway's Game of Life
 
